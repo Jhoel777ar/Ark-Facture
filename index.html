@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prueba Factura ARK WASM</title>
+<style>
+    body { 
+        font-family: Arial, sans-serif; 
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+    }
+    pre { 
+        background: #f0f0f0; 
+        padding: 15px; 
+        border-radius: 5px;
+        overflow-x: auto;
+        font-size: 12px;
+    }
+    button { 
+        padding: 10px 20px; 
+        margin: 5px; 
+        cursor: pointer;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+    .output-section {
+        background: white;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    h2 {
+        margin-top: 0;
+        color: #333;
+    }
+    .html-preview {
+        border: 2px solid #007bff;
+        padding: 10px;
+        background: white;
+        max-height: 600px;
+        overflow-y: auto;
+    }
+    .buttons {
+        margin-bottom: 20px;
+    }
+</style>
+</head>
+<body>
+<h1>🧾 Prueba Comprobante ARK (WASM)</h1>
+
+<div class="buttons">
+    <button id="generar">📄 Generar Comprobante</button>
+    <button id="validar">✅ Validar Comprobante</button>
+    <button id="limpiar">🗑️ Limpiar</button>
+</div>
+
+<div class="container">
+    <div class="output-section">
+        <h2>📊 Resultado JSON:</h2>
+        <pre id="output">Haz clic en "Generar Comprobante" para comenzar</pre>
+    </div>
+    
+    <div class="output-section">
+        <h2>🖼️ Vista Previa HTML:</h2>
+        <div id="htmlPreview" class="html-preview">
+            <em>El HTML generado aparecerá aquí...</em>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import init, { generar_comprobante_wasm, validar_comprobante_wasm } from './pkg/facture_ark.js';
+
+async function main() {
+    await init();
+    console.log("✅ WASM inicializado correctamente");
+
+    // Función para obtener la fecha actual en formato ISO pero con la hora local
+    function obtenerFechaLocal() {
+        const ahora = new Date();
+        // Convertir a ISO pero mantener la zona horaria local
+        const year = ahora.getFullYear();
+        const month = String(ahora.getMonth() + 1).padStart(2, '0');
+        const day = String(ahora.getDate()).padStart(2, '0');
+        const hours = String(ahora.getHours()).padStart(2, '0');
+        const minutes = String(ahora.getMinutes()).padStart(2, '0');
+        const seconds = String(ahora.getSeconds()).padStart(2, '0');
+        
+        // Formato ISO pero sin el offset de zona horaria (para que Rust lo trate como UTC)
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
+    }
+
+    const facturaJSON = {
+        numero_comprobante: "FAC-2025-00001",
+        codigo_control: "",
+        codigo_verificacion: "",
+        empresa: {
+            nombre: "COMERCIAL ARK S.R.L.",
+            nit: "1234567890",
+            razon_social: "COMERCIAL ARK SOCIEDAD DE RESPONSABILIDAD LIMITADA",
+            direccion: "Av. Arce #2345, Zona San Jorge",
+            telefono: "+591 2 2123456",
+            email: "contacto@ark.com.bo",
+            ciudad: "La Paz",
+            pais: "Bolivia",
+            regimen_tributario: "Régimen General"
+        },
+        cliente: {
+            nombre: "María González Pérez",
+            nit_ci: "4567890 LP",
+            direccion: "Calle 21 de Calacoto #890",
+            telefono: "+591 70123456",
+            ciudad: "La Paz"
+        },
+        detalle_venta: [
+            { 
+                descripcion: "Laptop HP ProBook 450 G9", 
+                cantidad: 2, 
+                precio_unitario: 4500.00,
+                codigo: "LAP-HP-450",
+                unidad_medida: "UND"
+            },
+            { 
+                descripcion: "Mouse Inalámbrico Logitech", 
+                cantidad: 3, 
+                precio_unitario: 89.90,
+                codigo: "MOU-LOG-M185",
+                unidad_medida: "UND"
+            },
+            { 
+                descripcion: "Teclado Mecánico RGB", 
+                cantidad: 1, 
+                precio_unitario: 350.00,
+                codigo: "TEC-RGB-001",
+                unidad_medida: "UND"
+            }
+        ],
+        fecha_emision: obtenerFechaLocal(),
+        moneda: "BOB",
+        subtotal: 0,
+        impuestos: 0,
+        descuentos: 150.00,
+        total: 0,
+        monto_pagado: 10000.00,
+        metodo_pago: "Efectivo",
+        tipo_comprobante: "recibo",
+        notas: "Gracias por su compra. Garantía de 12 meses."
+    };
+
+    const output = document.getElementById("output");
+    const htmlPreview = document.getElementById("htmlPreview");
+
+    document.getElementById("generar").addEventListener("click", () => {
+        try {
+            // Actualizar la fecha cada vez que se genera
+            facturaJSON.fecha_emision = obtenerFechaLocal();
+            
+            const facturaStr = JSON.stringify(facturaJSON);
+            console.log("📤 Enviando JSON:", facturaJSON);
+            
+            const resultadoStr = generar_comprobante_wasm(facturaStr);
+            const resultado = JSON.parse(resultadoStr);
+            
+            console.log("📥 Resultado:", resultado);
+            
+            if (resultado.exitoso) {
+                output.textContent = JSON.stringify(resultado.datos, null, 2);
+                htmlPreview.innerHTML = resultado.html;
+                console.log("✅ Comprobante generado exitosamente");
+            } else {
+                output.textContent = `❌ Error:\n${JSON.stringify(resultado, null, 2)}`;
+                htmlPreview.innerHTML = "<em style='color: red;'>Error al generar el HTML</em>";
+            }
+        } catch (error) {
+            console.error("❌ Error:", error);
+            output.textContent = `Error: ${error.message}`;
+            htmlPreview.innerHTML = `<em style='color: red;'>Error: ${error.message}</em>`;
+        }
+    });
+
+    document.getElementById("validar").addEventListener("click", () => {
+        try {
+            const facturaStr = JSON.stringify(facturaJSON);
+            const resultadoStr = validar_comprobante_wasm(facturaStr);
+            const resultado = JSON.parse(resultadoStr);
+            
+            console.log("🔍 Validación:", resultado);
+            output.textContent = JSON.stringify(resultado, null, 2);
+            
+            if (resultado.valido) {
+                htmlPreview.innerHTML = "<h3 style='color: green;'>✅ Comprobante válido</h3>";
+            } else {
+                htmlPreview.innerHTML = `<h3 style='color: red;'>❌ Comprobante inválido</h3><pre>${JSON.stringify(resultado.errores, null, 2)}</pre>`;
+            }
+        } catch (error) {
+            console.error("❌ Error:", error);
+            output.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    document.getElementById("limpiar").addEventListener("click", () => {
+        output.textContent = "Limpiado. Haz clic en 'Generar Comprobante' para comenzar";
+        htmlPreview.innerHTML = "<em>El HTML generado aparecerá aquí...</em>";
+    });
+
+    // Generar automáticamente al cargar
+    setTimeout(() => {
+        document.getElementById("generar").click();
+    }, 500);
+}
+
+main().catch(err => {
+    console.error("❌ Error inicializando:", err);
+    document.getElementById("output").textContent = `Error fatal: ${err.message}`;
+});
+</script>
+</body>
+</html>

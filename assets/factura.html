@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TIPO_COMPROBANTE}} {{NUMERO_COMPROBANTE}}</title>
+    <style>
+        @page {
+            margin: 0;
+            size: 80mm auto;
+            padding: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 80mm;
+            margin: 0 auto;
+        }
+
+        body {
+            width: 80mm;
+            margin: 0 auto;
+            font-family: 'Courier New', 'Lucida Console', monospace;
+            font-size: 8pt;
+            color: #000;
+            background: #FFF;
+            line-height: 1.25;
+            padding: 0;
+            text-align: center;
+        }
+
+        .container {
+            width: 80mm;
+            margin: 0 auto;
+            background: #FFF;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            background: #000;
+            color: #FFF;
+            padding: 2.5mm 3mm;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 2.5mm;
+        }
+
+        .header h1 {
+            font-size: 11pt;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 0.8mm;
+            word-wrap: break-word;
+        }
+
+        .header-empresa {
+            font-size: 7.5pt;
+            margin: 0.3mm 0;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-nit {
+            font-size: 7pt;
+            margin-top: 0.5mm;
+            letter-spacing: 0.3px;
+        }
+
+        .tipo-comprobante {
+            font-size: 6pt;
+            background: #222;
+            color: #FFF;
+            padding: 1.2mm 2mm;
+            display: inline-block;
+            margin-top: 1mm;
+            letter-spacing: 0.4px;
+            font-weight: bold;
+            border-radius: 1mm;
+        }
+
+        .info-box {
+            background: #F5F5F5;
+            border: 0.8pt solid #000;
+            padding: 1.8mm;
+            margin-bottom: 2.5mm;
+            width: 100%;
+            font-size: 7.2pt;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.2mm;
+            padding-bottom: 0.6mm;
+            border-bottom: 0.5pt dashed #888;
+            align-items: center;
+            text-align: left;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 6.5pt;
+            letter-spacing: 0.2px;
+            flex: 0 0 50%;
+        }
+
+        .info-value {
+            text-align: right;
+            font-family: monospace;
+            flex: 1;
+            word-break: break-all;
+            font-size: 6.8pt;
+            font-weight: 600;
+        }
+
+        .empresa-info {
+            width: 100%;
+            padding: 1.5mm;
+            margin-bottom: 2mm;
+            background: #FAFAFA;
+            border-left: 2mm solid #000;
+            font-size: 6.8pt;
+            text-align: left;
+        }
+
+        .empresa-detalle {
+            font-size: 6.8pt;
+            color: #333;
+            margin: 0.4mm 0;
+            word-break: break-word;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .empresa-detalle strong {
+            flex: 0 0 35%;
+        }
+
+        .empresa-detalle span {
+            flex: 1;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .cliente-box {
+            background: #EFEFEF;
+            border-left: 2mm solid #000;
+            border-top: 1pt solid #999;
+            border-bottom: 1pt solid #999;
+            padding: 1.5mm;
+            margin-bottom: 2mm;
+            width: 100%;
+            font-size: 7pt;
+            text-align: left;
+        }
+
+        .cliente-box strong {
+            display: block;
+            margin-bottom: 0.5mm;
+            font-size: 6.8pt;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .cliente-item {
+            font-size: 6.8pt;
+            margin: 0.3mm 0;
+            word-break: break-word;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cliente-item strong {
+            display: inline;
+            margin: 0;
+            flex: 0 0 auto;
+        }
+
+        .cliente-item span {
+            text-align: right;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .qr-container {
+            text-align: center;
+            margin: 2.5mm 0;
+            padding: 2mm;
+            background: #F9F9F9;
+            border: 1pt dashed #666;
+            width: 100%;
+        }
+
+        .qr-label {
+            font-size: 6.5pt;
+            font-weight: bold;
+            margin-bottom: 1mm;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .qr-code {
+            display: inline-block;
+            margin: 0.5mm auto;
+        }
+
+        .qr-code svg {
+            width: 42mm;
+            height: 42mm;
+            image-rendering: pixelated;
+            display: block;
+            margin: 0 auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2mm 0;
+            font-size: 6.8pt;
+            border-top: 1pt solid #000;
+            border-bottom: 1pt solid #000;
+        }
+
+        thead {
+            background: #1A1A1A;
+            color: #FFF;
+        }
+
+        th {
+            padding: 1.2mm 0.6mm;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.15px;
+            font-size: 6.3pt;
+            border-bottom: 0.8pt solid #000;
+            word-break: break-word;
+        }
+
+        th:first-child {
+            text-align: left;
+        }
+
+        th:last-child {
+            text-align: right;
+        }
+
+        td {
+            padding: 0.8mm 0.6mm;
+            word-break: break-word;
+            vertical-align: middle;
+            font-size: 6.8pt;
+            line-height: 1.15;
+        }
+
+        td:first-child {
+            text-align: left;
+        }
+
+        td:nth-child(2),
+        td:nth-child(3),
+        td:nth-child(4) {
+            text-align: right;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #FFFFFF;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #F8F8F8;
+        }
+
+        .totals-section {
+            width: 100%;
+            margin: 2mm 0;
+            padding: 1.8mm;
+            background: #000;
+            color: #FFF;
+            border: 1pt solid #000;
+            font-size: 8pt;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8mm 0;
+            border-bottom: 0.5pt solid #444;
+            font-family: monospace;
+            align-items: center;
+        }
+
+        .total-row:last-child {
+            border-bottom: none;
+            font-size: 9.5pt;
+            font-weight: bold;
+            margin-top: 1mm;
+            padding-top: 1mm;
+            border-top: 1pt solid #666;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .total-row span:last-child {
+            text-align: right;
+            flex: 0 0 auto;
+            min-width: 25mm;
+        }
+
+        .pago-box {
+            background: #D4EDDA;
+            border-left: 2.5mm solid #28A745;
+            padding: 1.5mm;
+            margin-top: 1.8mm;
+            width: 100%;
+            font-size: 7pt;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .disclaimer {
+            font-size: 5.8pt;
+            color: #222;
+            text-align: center;
+            margin-top: 1.8mm;
+            padding: 1.2mm;
+            border-top: 1pt dashed #666;
+            border-bottom: 1pt dashed #666;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .disclaimer strong {
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 1.5mm;
+            padding: 1mm 0;
+            color: #555;
+            font-size: 6pt;
+            width: 100%;
+            letter-spacing: 0.2px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #000;
+            color: #FFF;
+            padding: 0.8mm 2.5mm;
+            font-size: 5.8pt;
+            font-weight: bold;
+            margin-top: 0.8mm;
+            letter-spacing: 0.4px;
+            border-radius: 1mm;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                width: 80mm;
+            }
+
+            html {
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                width: 80mm;
+                margin: 0;
+                padding: 0;
+            }
+
+            @page {
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{TIPO_COMPROBANTE}}</h1>
+            <p class="header-empresa">{{EMPRESA_NOMBRE}}</p>
+            <p class="header-nit">NIT: {{EMPRESA_NIT}}</p>
+            <div class="tipo-comprobante">COMPROBANTE INTERNO • SIN CRÉDITO FISCAL</div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-row">
+                <span class="info-label">Nº Comprobante</span>
+                <span class="info-value">{{NUMERO_COMPROBANTE}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fecha/Hora</span>
+                <span class="info-value">{{FECHA_EMISION}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Control</span>
+                <span class="info-value">{{CODIGO_CONTROL}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Verificación</span>
+                <span class="info-value">{{CODIGO_VERIFICACION}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Moneda</span>
+                <span class="info-value">{{MONEDA}}</span>
+            </div>
+        </div>
+
+        <div class="empresa-info">
+            {{EMPRESA_INFO}}
+        </div>
+
+        <div class="qr-container">
+            <div class="qr-label">Código QR - Verificación</div>
+            <div class="qr-code">{{QR_CODE}}</div>
+        </div>
+
+        {{CLIENTE_INFO}}
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%">Descripción</th>
+                    <th style="width: 13%">Cant.</th>
+                    <th style="width: 18%">P.Unit.</th>
+                    <th style="width: 19%">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{DETALLE_ITEMS}}
+            </tbody>
+        </table>
+
+        <div class="totals-section">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span>{{SUBTOTAL}}</span>
+            </div>
+            {{DESCUENTOS}}
+            {{IMPUESTOS}}
+            {{ENVIO}}
+            <div class="total-row">
+                <span>TOTAL:</span>
+                <span>{{TOTAL}}</span>
+            </div>
+            {{MONTO_PAGADO}}
+            {{CAMBIO}}
+        </div>
+
+        {{METODO_PAGO}}
+
+        <div class="disclaimer">
+            <strong>COMPROBANTE DE VENTA INTERNO</strong><br>
+            Documento de respaldo contable y de control interno.<br>
+            <em>No válido para crédito fiscal IVA ni para fines tributarios ante el SIN Bolivia.</em><br>
+            Válido para: control interno, auditoría, inventario y registro administrativo.<br>
+            Emitido conforme a la <strong>Ley 843</strong> y al <strong>D.S. 24051</strong> (régimen general
+            contable).<br>
+            <span style="font-size:5.5pt; color:#555;">Uso exclusivo dentro de la empresa o institución emisora.</span>
+        </div>
+
+        <div class="footer">
+            <p><strong>ARK FACTURE SERVICE v2.1</strong></p>
+            <p>SHA-256 • QR Verificable • Bolivia</p>
+            <div class="badge">CERTIFICADO</div>
+        </div>
+    </div>
+</body>
+
+</html>
