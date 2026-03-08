@@ -1,0 +1,64 @@
+{
+  "name": "ark_facture",
+  "type": "module",
+  "collaborators": [
+    "ARK DEV"
+  ],
+  "description": "Sistema Enterprise de generación de comprobantes de venta internos para Bolivia - Compilado a WebAssembly desde Rust con arquitectura Zero-Knowledge",
+  "version": "4.0.0",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arkdev/facture_ark"
+  },
+  "files": [
+    "facture_ark_bg.wasm",
+    "facture_ark.js",
+    "facture_ark_bg.js",
+    "facture_ark.d.ts",
+    "facture_ark_bg.wasm.d.ts",
+    "index.js",
+    "package.json",
+    "README.md",
+    "INTEGRATION.md"
+  ],
+  "main": "index.js",
+  "module": "index.js",
+  "types": "facture_ark.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./facture_ark.d.ts"
+    },
+    "./wasm": {
+      "import": "./facture_ark.js",
+      "types": "./facture_ark.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "keywords": [
+    "factura",
+    "comprobante",
+    "bolivia",
+    "sha256",
+    "wasm",
+    "xml",
+    "qr",
+    "invoice",
+    "receipt",
+    "zero-knowledge",
+    "enterprise"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "optionalDependencies": {
+    "puppeteer": "^21.0.0",
+    "html-pdf": "^3.0.0"
+  },
+  "author": "ARK DEV",
+  "homepage": "https://github.com/arkdev/facture_ark#readme",
+  "bugs": {
+    "url": "https://github.com/arkdev/facture_ark/issues"
+  }
+}

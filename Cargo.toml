@@ -1,12 +1,12 @@
 [package]
 name = "facture_ark"
-version = "2.1.0"
+version = "4.0.0"
 edition = "2021"
 authors = ["ARK DEV"]
-description = "Sistema Enterprise de Comprobantes de Venta Internos - Bolivia"
+description = "Sistema Enterprise de generación de comprobantes de venta internos para Bolivia - Compilado a WebAssembly desde Rust con arquitectura Zero-Knowledge"
 license = "GPL-3.0-or-later"
-keywords = ["factura", "comprobante", "bolivia", "sha256"]
-categories = ["business", "finance"]
+keywords = ["factura", "comprobante", "bolivia", "sha256", "wasm", "xml"]
+categories = ["business", "finance", "wasm"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -23,13 +23,21 @@ sha2 = "0.10"
 hex = "0.4"
 qrcode = "0.12"
 console_error_panic_hook = "0.1.7"
+quick-xml = { version = "0.31", features = ["serialize"] }
+regex = "1.10"
+uuid = { version = "1.6", features = ["v4", "serde", "js"] }
+base64 = "0.21"
+rsa = { version = "0.9", optional = true }
+ring = { version = "0.17", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["Window", "Document", "HtmlElement"] }
 
 [features]
 default = []
-secure = []
+secure = ["rsa", "ring"]
+full = ["secure"]
 
 [profile.release]
 opt-level = "z"
