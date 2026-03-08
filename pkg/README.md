@@ -6,6 +6,8 @@ Compilado a WebAssembly desde Rust con arquitectura Zero-Knowledge. Genera compr
 
 Ideal para sistemas POS, tiendas online, aplicaciones SaaS y plataformas de facturación.
 
+**Repositorio**: https://github.com/Jhoel777ar/Ark-Facture
+
 ## ✨ Características v4.0
 
 - 🚀 **Ultra rápido**: ~2-3ms por comprobante (compilado a WASM)

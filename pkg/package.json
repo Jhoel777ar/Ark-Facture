@@ -9,7 +9,7 @@
   "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arkdev/facture_ark"
+    "url": "https://github.com/Jhoel777ar/Ark-Facture"
   },
   "files": [
     "facture_ark_bg.wasm",
